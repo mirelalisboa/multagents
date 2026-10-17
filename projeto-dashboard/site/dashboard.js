@@ -3,6 +3,7 @@
   "use strict";
 
   var MONTHS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+  var DATA_FIELDS = ["id_venda", "data", "cidade", "categoria", "produto", "quantidade", "preco_unitario", "forma_pagamento", "valor_venda"];
   var LIGHT_CHART_COLORS = ["#542477", "#9257b2", "#b65c16", "#287660", "#315f9b"];
   var DARK_CHART_COLORS = ["#d8b4ff", "#ad7add", "#ffc477", "#7fd0b0", "#8ab8f0"];
   var rowsAll = [];
@@ -415,6 +416,57 @@
     }
   }
 
+  function validateRows(rows) {
+    var index;
+    var fieldIndex;
+    var ownCount;
+    var key;
+    var row;
+    var previous;
+    if (Object.prototype.toString.call(rows) !== "[object Array]") {
+      throw new Error("Os dados embutidos precisam ser uma lista.");
+    }
+    for (index = 0; index < rows.length; index += 1) {
+      row = rows[index];
+      if (!row || typeof row !== "object") throw new Error("Registro de venda inválido.");
+      ownCount = 0;
+      for (key in row) {
+        if (Object.prototype.hasOwnProperty.call(row, key)) {
+          ownCount += 1;
+          var known = false;
+          for (fieldIndex = 0; fieldIndex < DATA_FIELDS.length; fieldIndex += 1) {
+            if (DATA_FIELDS[fieldIndex] === key) known = true;
+          }
+          if (!known) throw new Error("Campo não previsto no contrato: " + key);
+        }
+      }
+      if (ownCount !== DATA_FIELDS.length) throw new Error("O registro não contém exatamente os nove campos da base.");
+      for (fieldIndex = 0; fieldIndex < DATA_FIELDS.length; fieldIndex += 1) {
+        if (!Object.prototype.hasOwnProperty.call(row, DATA_FIELDS[fieldIndex])) {
+          throw new Error("Campo obrigatório ausente: " + DATA_FIELDS[fieldIndex]);
+        }
+      }
+      if (typeof row.id_venda !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(row.data)) {
+        throw new Error("ID ou data da venda fora do formato esperado.");
+      }
+      if (typeof row.cidade !== "string" || typeof row.categoria !== "string" || typeof row.produto !== "string" || typeof row.forma_pagamento !== "string") {
+        throw new Error("Os campos de descrição devem ser texto.");
+      }
+      if (typeof row.quantidade !== "number" || !isFinite(row.quantidade) || row.quantidade <= 0 || Math.floor(row.quantidade) !== row.quantidade) {
+        throw new Error("quantidade deve ser um inteiro positivo.");
+      }
+      if (typeof row.preco_unitario !== "number" || !isFinite(row.preco_unitario) || row.preco_unitario < 0 ||
+          typeof row.valor_venda !== "number" || !isFinite(row.valor_venda) ||
+          row.valor_venda !== row.quantidade * row.preco_unitario) {
+        throw new Error("Preço ou valor_venda não confere com a base.");
+      }
+      for (previous = 0; previous < index; previous += 1) {
+        if (rows[previous].id_venda === row.id_venda) throw new Error("id_venda repetido nos dados embutidos.");
+      }
+    }
+    return rows;
+  }
+
   /* A persistência é opcional por segurança: alguns navegadores restringem localStorage em file://. */
   function setTheme(theme, persist) {
     var dark = theme === "escuro";
@@ -437,10 +489,7 @@
     var categoryValues = [];
     var i;
     try {
-      rowsAll = JSON.parse(dataNode.textContent || dataNode.innerText || dataNode.text);
-      if (!rowsAll || Object.prototype.toString.call(rowsAll) !== "[object Array]") {
-        throw new Error("O JSON embutido precisa conter uma lista de vendas.");
-      }
+      rowsAll = validateRows(JSON.parse(dataNode.textContent || dataNode.innerText || dataNode.text));
       for (i = 0; i < rowsAll.length; i += 1) {
         cityValues.push(rowsAll[i].cidade);
         categoryValues.push(rowsAll[i].categoria);

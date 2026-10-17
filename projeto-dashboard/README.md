@@ -6,7 +6,7 @@ Cada linha de `papelaria_limpa.csv` é uma venda identificada por `id_venda`. O 
 
 **Escopo autorizado:** o pedido anterior de mostrar “não vendidos” foi substituído, com autorização do usuário, por “itens vendidos”, pois este CSV contém somente vendas realizadas. A base não possui registros de não vendidos, estoque ou disponibilidade; nenhum campo foi inventado. Valor vendido não é lucro: custos e despesas não estão disponíveis.
 
-O CSV limpo herda o tratamento documentado em `../resumo.md`: remoção de duas duplicatas exatamente iguais, espaços externos aparados em cidade, categorias padronizadas, quatro pagamentos vazios preenchidos como “Não informado” e cálculo de `valor_venda`. O pipeline pandas valida a base sem alterá-la e gera `site/dados.json` e os dados embutidos em `site/index.html`. São 180 vendas e 548 unidades vendidas, de 2026-01-01 a 2026-03-31.
+O CSV limpo herda o tratamento documentado em `../resumo.md`: remoção de duas duplicatas exatamente iguais, espaços externos aparados em cidade, categorias padronizadas, quatro pagamentos vazios preenchidos como “Não informado” e cálculo de `valor_venda`. O pipeline pandas valida a base sem alterá-la e gera `site/dados.json` e os dados embutidos em `site/index.html`. O JavaScript lê esse array embutido, valida que cada venda tem exatamente os nove campos reais e deriva dele os KPIs, filtros, gráficos e linhas da tabela; não há registros de venda escritos manualmente no código. São 180 vendas e 548 unidades vendidas, de 2026-01-01 a 2026-03-31.
 
 ## Preparar e testar
 
@@ -17,7 +17,7 @@ No PowerShell, na raiz do projeto (a pasta que contém `papelaria_limpa.csv`):
 .\.venv\Scripts\python.exe -m unittest discover -s .\projeto-dashboard\tests -v
 ```
 
-Sem `.venv`, substitua `\.venv\Scripts\python.exe` por `python` e instale pandas, se necessário, com `python -m pip install pandas`.
+Sem `.venv`, use `python` no lugar do interpretador virtual e instale pandas, se necessário, com `python -m pip install pandas`.
 
 ## Abrir ou publicar
 
