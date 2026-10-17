@@ -1,0 +1,18 @@
+# Ambiente local e caches
+/.venv/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# Artefatos pesados/gerados que não são necessários no GitHub
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.tmp
+*.log
+
+# Ferramentas locais
+.opencode/sessions/
+.opencode/cache/
+node_modules/

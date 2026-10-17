@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f5ff">
+  <meta name="description" content="Painel de vendas e itens vendidos de papelaria por categoria e mês.">
+  <title>Vendas de papelaria | Painel</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body class="tema-claro">
+  <main class="container">
+    <header class="topo">
+      <div class="marca" aria-hidden="true">✳</div>
+      <div class="topo-texto">
+        <p class="sobretitulo">PAINEL COMERCIAL · JANEIRO A MARÇO DE 2026</p>
+        <h1>Visão de vendas</h1>
+        <p class="introducao">Valor vendido, vendas e itens vendidos na papelaria.</p>
+      </div>
+      <button type="button" id="alternar-tema" class="botao-tema" aria-pressed="false">Ativar tema escuro</button>
+    </header>
+
+    <p class="nota-base">A base registra somente vendas realizadas; não contém itens não vendidos nem dados de estoque.</p>
+
+    <section class="filtros cartao" id="filtros" aria-label="Filtros do painel">
+      <div class="campo-filtro">
+        <label for="filtro-cidade">Cidade</label>
+        <select id="filtro-cidade" name="cidade"><option value="">Todas as cidades</option></select>
+      </div>
+      <div class="campo-filtro">
+        <label for="filtro-categoria">Categoria</label>
+        <select id="filtro-categoria" name="categoria"><option value="">Todas as categorias</option></select>
+      </div>
+      <div class="grupo-acoes">
+        <button type="button" class="botao-secundario" id="voltar-visao-geral">Voltar à visão geral</button>
+        <button type="button" class="botao-primario" id="limpar-filtros">Limpar filtros</button>
+      </div>
+      <p class="filtros-ajuda" id="resumo-filtros" aria-live="polite"></p>
+    </section>
+
+    <section class="indicadores" aria-label="Indicadores de vendas">
+      <article class="kpi cartao">
+        <p class="kpi-label">Valor vendido</p>
+        <p class="kpi-valor" id="kpi-total" aria-live="polite">—</p>
+        <p class="kpi-nota">Soma de quantidade × preço unitário</p>
+      </article>
+      <article class="kpi cartao">
+        <p class="kpi-label">Quantidade de vendas</p>
+        <p class="kpi-valor" id="kpi-vendas" aria-live="polite">—</p>
+        <p class="kpi-nota">Uma linha corresponde a uma venda</p>
+      </article>
+      <article class="kpi cartao kpi-destaque">
+        <p class="kpi-label">Ticket médio</p>
+        <p class="kpi-valor" id="kpi-ticket" aria-live="polite">—</p>
+        <p class="kpi-nota">Valor vendido ÷ número de vendas</p>
+      </article>
+    </section>
+
+    <p class="estado-vazio" id="estado-vazio" role="status" aria-live="polite" hidden>
+      Nenhuma venda corresponde aos filtros selecionados. Ajuste ou limpe os filtros.
+    </p>
+
+    <section class="graficos" aria-label="Itens vendidos">
+      <article class="cartao grafico-cartao">
+        <div class="cartao-cabecalho">
+          <div>
+            <p class="sobretitulo">PARTICIPAÇÃO</p>
+            <h2 id="titulo-grafico-categoria">Itens vendidos por categoria</h2>
+            <p class="dica-grafico">Selecione uma fatia ou item da legenda para filtrar o detalhamento.</p>
+          </div>
+          <span class="unidade">Unidades vendidas</span>
+        </div>
+        <div class="donut-conteudo">
+          <div class="grafico-area grafico-donut" id="grafico-categoria" role="group" aria-labelledby="titulo-grafico-categoria"></div>
+          <div class="legenda-categorias" id="legenda-categoria" aria-label="Legenda e filtro de categoria"></div>
+        </div>
+        <p class="categoria-ativa" id="categoria-ativa" aria-live="polite">Visão geral de todas as categorias.</p>
+      </article>
+
+      <article class="cartao grafico-cartao">
+        <div class="cartao-cabecalho">
+          <div>
+            <p class="sobretitulo">EVOLUÇÃO</p>
+            <h2 id="titulo-grafico-tempo">Itens vendidos por mês</h2>
+            <p class="dica-grafico">O gráfico acompanha a categoria selecionada.</p>
+          </div>
+          <span class="unidade">Unidades vendidas</span>
+        </div>
+        <div class="grafico-area grafico-mensal" id="grafico-tempo" role="group" aria-labelledby="titulo-grafico-tempo"></div>
+      </article>
+    </section>
+
+    <section class="cartao tabela-cartao" aria-labelledby="titulo-tabela">
+      <div class="cartao-cabecalho tabela-cabecalho">
+        <div><p class="sobretitulo">DETALHAMENTO</p><h2 id="titulo-tabela">Vendas</h2></div>
+        <span class="contador" id="contador-tabela" aria-live="polite"></span>
+      </div>
+      <div class="tabela-scroll" tabindex="0" aria-label="Tabela de vendas; role horizontalmente em telas pequenas">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Data</th><th scope="col">Venda</th><th scope="col">Cidade</th>
+              <th scope="col">Categoria</th><th scope="col">Produto</th>
+              <th scope="col" class="numero">Unidades vendidas</th><th scope="col" class="numero">Valor vendido</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela"></tbody>
+        </table>
+      </div>
+      <p class="nota-tabela">Cada linha é uma venda; “unidades vendidas” soma os itens daquela venda.</p>
+    </section>
+
+    <footer>
+      <span>Fonte: <code>papelaria_limpa.csv</code> · período de 01/01 a 31/03/2026.</span>
+      <span>Valor vendido não representa lucro; custos não estão disponíveis.</span>
+    </footer>
+  </main>
+
+<!-- INLINE_DATA_START -->
+  <script type="application/json" id="dashboard-data">
+[]
+  </script>
+<!-- INLINE_DATA_END -->
+  <script src="dashboard.js"></script>
+</body>
+</html>
